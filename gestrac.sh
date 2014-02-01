@@ -137,9 +137,9 @@ do
   1)
       # Buscar los comandos deseados.
       echo
-         fcolor "<< Introducir dato a consultar: >>"
+          read -p "<< Introducir dato a consultar: >> " COMAND_
           echo
-          read COMAND_
+#          read COMAND_
           COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
           clear
       if [ -e "$COMANDO" ]
@@ -156,9 +156,9 @@ do
       ### Busqueda recursiva
       clear
       echo
-          fcolor "<< Introducir dato a consultar: >>"
+          read -p "<< Introducir dato a consultar: >> " COMAND_
           echo
-          read COMAND_
+#          read COMAND_
           COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
           clear
           grep -l $COMANDO * | cut -d/ -f2 > ../0-file3.txt
@@ -179,8 +179,8 @@ do
                   echo "[0] Cancelar"
                   echo
                   echo
-                  fcolor "<< Comando a mostrar... >>"
-                  read COM
+                  read -p "<< Comando a mostrar... >> " COM
+ #                 read COM
                   if [ $COM -ne 0 ] && [ $COM -le $numero ];
                   then
                       comando=`sed -n ${COM}p ../0-file3.txt`
@@ -194,8 +194,8 @@ do
                      fi
                      read
                      echo
-                     fcolor "<< Consultar otro comando del listado? [s/n] >>"
-                     read OP
+                     read -p "<< Consultar otro comando del listado? [s/n] >> " OP
+#                     read OP
                      clear
                   elif [ $COM -gt $numero ] ;
                   then

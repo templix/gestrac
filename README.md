@@ -8,9 +8,9 @@ Se trata de un complemento de la versión web (https://tractatuslapipaplena.hero
 Uso:
 
 gestrac -update
-      Descarga la última versión del tractatus alojada en github.
+      (Descarga la última versión del tractatus alojada en github.)
       
 gestrac
-      Una vez actualizado el tractatus las demás consultas ganaran en rapidez sin el argumento "-update"
+      (Una vez actualizado el tractatus las demás consultas ganaran en rapidez sin el argumento "-update")
       
 

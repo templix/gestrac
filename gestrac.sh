@@ -5,8 +5,19 @@
 # Licence: GPL v3.0
 # Description: Script de desarrollo del tractatus via github
 # Require: cowsay ccze git
-# usage: gestrac 
-# usage: gestrac -update
+if [ "$1" = -h ]
+then
+	echo
+	echo "  gestrac -update (Descargar la última versión) "
+	echo
+	echo "  gestrac (Consulta local) "
+	echo
+	echo "  gestrac -h (Mostrar esta ayuda y salir) "
+	echo
+	exit
+else
+	echo
+fi 
 DIR=$HOME/TRAC
 ## comprobar privilegios
 if [ "$(id -u)" = "0" ]

@@ -5,6 +5,8 @@
 # Licence: GPL v3.0
 # Description: Script de desarrollo del tractatus via github
 # Require: cowsay ccze git
+# usage: gestrac 
+# usage: gestrac -update
 DIR=$HOME/TRAC
 ## comprobar privilegios
 if [ "$(id -u)" = "0" ]
@@ -139,7 +141,6 @@ do
       echo
           read -p "<< Introducir dato a consultar: >> " COMAND_
           echo
-#          read COMAND_
           COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
           clear
       if [ -e "$COMANDO" ]
@@ -158,7 +159,6 @@ do
       echo
           read -p "<< Introducir dato a consultar: >> " COMAND_
           echo
-#          read COMAND_
           COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
           clear
           grep -l $COMANDO * | cut -d/ -f2 > ../0-file3.txt
@@ -180,7 +180,6 @@ do
                   echo
                   echo
                   read -p "<< Comando a mostrar... >> " COM
- #                 read COM
                   if [ $COM -ne 0 ] && [ $COM -le $numero ];
                   then
                       comando=`sed -n ${COM}p ../0-file3.txt`
@@ -195,7 +194,6 @@ do
                      read
                      echo
                      read -p "<< Consultar otro comando del listado? [s/n] >> " OP
-#                     read OP
                      clear
                   elif [ $COM -gt $numero ] ;
                   then
@@ -218,7 +216,6 @@ do
 done
 clear
 echo
-#rm ../0-file1.txt
 echo  "============================================================="
 fcolor "<< La base de datos del tractatus cuenta con $NUM2 entradas >>"
 echo "============================================================="

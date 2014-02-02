@@ -107,31 +107,31 @@ function fpagina_man ()
 ###
 if [ "$1" = -update ]
 then
-if [ -d $DIR ]
-then
-  echo
-  fcolor " <<Actualizando la versión del tractatus... >> "
-  cd $DIR
-  rm 0-*.txt
-  rm -R files
-  echo
-  git pull
-  echo
-  cat tractatus.txt | sed '1d' > 0-file1.txt
-  fdesglosetractatus
-  echo
-else
-  fdir
-  cd $DIR
-  git clone https://github.com/templix/tractatus.git .
-  git init
-  echo
-  fcolor " << Creando directorio TRAC y repositorio git... >> "
-  echo
-  cat tractatus.txt | sed '1d' > 0-file1.txt
-  fdesglosetractatus
-  echo
-fi
+	if [ -d $DIR ]
+	then
+  		echo
+  		fcolor " <<Actualizando la versión del tractatus... >> "
+		cd $DIR
+  		rm 0-*.txt
+  		rm -R files
+  		echo
+  		git pull
+  		echo
+  		cat tractatus.txt | sed '1d' > 0-file1.txt
+  		fdesglosetractatus
+  		echo
+	else
+  		fdir
+  		cd $DIR
+  		git clone https://github.com/templix/tractatus.git .
+  		git init
+  		echo
+  		fcolor " << Creando directorio TRAC y repositorio git... >> "
+  		echo
+  		cat tractatus.txt | sed '1d' > 0-file1.txt
+  		fdesglosetractatus
+  		echo
+	fi
 else
 	echo
 fi
@@ -140,90 +140,90 @@ cd $DIR/files
 NUM2=$(cat ../0-file1.txt | awk 'BEGIN { FS="\n"; RS="" } {print $1 }' | awk -F " " '{print$1 }' | wc -l)
 while [ "$OPC1" != 3 ]
 do
-  fcolor "[1] Entrar una busqueda"
-  fcolor "[2] Realizar busqueda avanzada"
-  fcolor "[3] Salir"
-  echo
-  read -p "<< Ingresar opción (NO distingue mayúsculas y minúsculas): >> " OPC1
-  echo
-  case $OPC1 in
-  1)
-      # Buscar los comandos deseados.
-      echo
-          read -p "<< Introducir dato a consultar: >> " COMAND_
-          echo
-          COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
-          clear
-      if [ -e "$COMANDO" ]
-      then
-          pr -f -d -h $COMANDO $COMANDO | ccze -A
-          echo
-          read
-     else
-          fpagina_man
-          echo
-     fi
-     clear;;
-  2)
-      ### Busqueda recursiva
-      clear
-      echo
-          read -p "<< Introducir dato a consultar: >> " COMAND_
-          echo
-          COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
-          clear
-          grep -l $COMANDO * | cut -d/ -f2 > ../0-file3.txt
-          if [ -s ../0-file3.txt ]
-          then
-              OP=s
-              while [ $OP = s ]
-              do
-                  echo
-                  fcolor "El dato entrado sale en los siguientes ficheros: "
-                  echo
-                  numero=0
-                  for linia in `cat ../0-file3.txt`; do
-                      let numero+=1
-                      echo "[$numero] $linia"
-                  done
-                  echo
-                  echo "[0] Cancelar"
-                  echo
-                  echo
-                  read -p "<< Comando a mostrar... >> " COM
-                  if [ $COM -ne 0 ] && [ $COM -le $numero ];
-                  then
-                      comando=`sed -n ${COM}p ../0-file3.txt`
-                      if [ "$?" -eq "0" ]
-                      then
-                          echo
-                          clear
-                          pr -f -d -h $comando $comando | ccze -A
-                      else
-                          echo
-                     fi
-                     read
-                     echo
-                     read -p "<< Consultar otro comando del listado? [s/n] >> " OP
-                     clear
-                  elif [ $COM -gt $numero ] ;
-                  then
-                      echo
-                      clear
-                      cowsay -f tux "No existe en el listado"
-                      read
-                 else
-                      OP="n"
-                      clear
-                  fi
-              done
-          else
-              fpagina_man
-              echo
-         fi
-      echo;;
-  3);;
-  esac
+	fcolor "[1] Entrar una busqueda"
+	fcolor "[2] Realizar busqueda avanzada"
+	fcolor "[3] Salir"
+	echo
+	read -p "<< Ingresar opción (NO distingue mayúsculas y minúsculas): >> " OPC1
+	echo
+	case $OPC1 in
+	1)
+    	# Buscar los comandos deseados.
+    	echo
+    	read -p "<< Introducir dato a consultar: >> " COMAND_
+     	echo
+		COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
+ 		clear
+      	if [ -e "$COMANDO" ]
+      	then
+        	pr -f -d -h $COMANDO $COMANDO | ccze -A
+          	echo
+          	read
+     	else
+          	fpagina_man
+          	echo
+     	fi
+     	clear;;
+ 	2)
+      	### Busqueda recursiva
+      	clear
+      	echo
+        	read -p "<< Introducir dato a consultar: >> " COMAND_
+          	echo
+          	COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
+          	clear
+          	grep -l $COMANDO * | cut -d/ -f2 > ../0-file3.txt
+          	if [ -s ../0-file3.txt ]
+          	then
+            	OP=s
+              	while [ $OP = s ]
+              	do
+                	echo
+                  	fcolor "El dato entrado sale en los siguientes ficheros: "
+                  	echo
+                  	numero=0
+                  	for linia in `cat ../0-file3.txt`; do
+                    	let numero+=1
+                      	echo "[$numero] $linia"
+                  	done
+                  	echo
+                  	echo "[0] Cancelar"
+                  	echo
+                  	echo
+                  	read -p "<< Comando a mostrar... >> " COM
+                  	if [ $COM -ne 0 ] && [ $COM -le $numero ];
+                  	then
+                    	comando=`sed -n ${COM}p ../0-file3.txt`
+                      	if [ "$?" -eq "0" ]
+                      	then
+                        	echo
+                          	clear
+                          	pr -f -d -h $comando $comando | ccze -A
+                      	else
+                        	echo
+                     	fi
+                    read
+                    echo
+                    read -p "<< Consultar otro comando del listado? [s/n] >> " OP
+                    clear
+                  	elif [ $COM -gt $numero ] ;
+                  	then
+                    	echo
+                      	clear
+                      	cowsay -f tux "No existe en el listado"
+                      	read
+                 	else
+                    	OP="n"
+                      	clear
+                  	fi
+              	done
+          	else
+            	fpagina_man
+              	echo
+         	fi
+     	 echo;;
+	3);;
+esac
 done
 clear
 echo

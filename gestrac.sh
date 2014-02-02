@@ -1,7 +1,7 @@
 #!/bin/bash
 # Date: 30-01-2014
 # Author: "lapipaplena" <lapipaplena@gmail.com>
-# Version: 4.5
+# Version: 4.7
 # Licence: GPL v3.0
 # Description: Script de desarrollo del tractatus via github
 # Require: cowsay ccze git
@@ -10,7 +10,7 @@ then
 	echo
 	echo "  gestrac -update (Descargar la última versión) "
 	echo
-	echo "  gestrac (Consulta local) "
+	echo "  gestrac (Consulta local. Más rápido) "
 	echo
 	echo "  gestrac -h (Mostrar esta ayuda y salir) "
 	echo
@@ -202,10 +202,10 @@ do
                       	else
                         	echo
                      	fi
-                    read
-                    echo
-                    read -p "<< Consultar otro comando del listado? [s/n] >> " OP
-                    clear
+                    	read
+                    	echo
+                    	read -p "<< Consultar otro comando del listado? [s/n] >> " OP
+                    	clear
                   	elif [ $COM -gt $numero ] ;
                   	then
                     	echo

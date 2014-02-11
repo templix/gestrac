@@ -1,9 +1,9 @@
 #!/bin/bash
 # Date: 30-01-2014
 # Author: "lapipaplena" <lapipaplena@gmail.com>
-# Version: 4.7
+# Version: 4.8
 # Licence: GPL v3.0
-# Description: Script de desarrollo del tractatus via github
+# Description: Consulta del tractatus alojado en GitHub via consola.
 # Require: cowsay ccze git
 if [ "$1" = -h ]
 then

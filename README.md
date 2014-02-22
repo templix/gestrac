@@ -14,3 +14,5 @@ gestrac
       (Una vez actualizado el tractatus las demás consultas ganaran en rapidez sin el argumento "-update")
       
 
+gestrac -h
+	  (Muestra esta ayuda y sale.			

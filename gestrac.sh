@@ -115,8 +115,9 @@ then
   		rm 0-*.txt
   		rm -R files
   		echo
-  		git pull
+#  		git pull
   		echo
+		cp ~/tractatus/tractatus.txt .
   		cat tractatus.txt | sed '1d' > 0-file1.txt
   		fdesglosetractatus
   		echo

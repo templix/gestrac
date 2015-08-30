@@ -15,4 +15,4 @@ gestrac
       
 
 gestrac -h
-	  (Muestra esta ayuda y sale.			
+	  (Muestra esta ayuda y sale.)			

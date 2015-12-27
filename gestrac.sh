@@ -1,24 +1,10 @@
 #!/bin/bash
-# Date: 30-01-2014
+# Date: 30-12-2015
 # Author: "lapipaplena" <lapipaplena@gmail.com>
-# Version: 5 (31-1-15)
+# Version: 6 (30-12-15)
 # Licence: GPL v3.0
 # Description: Consulta del tractatus alojado en GitHub via consola.
 # Require: cowsay ccze git
-if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]
-then
-	echo
-	echo "  gestrac [--update] [-u] (Descargar la última versión) "
-	echo
-	echo "  gestrac (Consulta local. Más rápido) "
-	echo
-	echo "  gestrac [--help] [-h] (Mostrar esta ayuda y salir) "
-	echo
-	exit
-else
-	echo
-fi
-DIR=$HOME/TRAC
 ## comprobar privilegios
 if [ "$(id -u)" = "0" ]
 then
@@ -104,13 +90,25 @@ function fpagina_man ()
     read
 }
 #
-###
-if [[ "$1" == "--update" ]] || [[ "$1" == "-u" ]]
-then
-	if [ -d $DIR ]
+function fshowhelp ()
+{
+  	echo
+	echo "  gestrac [--update] [-u] (Descargar la última versión) "
+	echo
+	echo "  gestrac (Consulta local. Más rápido) "
+	echo
+	echo "  gestrac [--help] [-h] (Mostrar esta ayuda y salir) "
+	echo
+}
+#
+function factualizar ()
+{
+    if [ -d $DIR ]
 	then
   		echo
-  		fcolor " <<Actualizando la versión del tractatus... >> "
+        fcolor "Encontrado directorio de trabajo "${HOME}/TRAC"..."
+        echo
+        fcolor " <<Actualizando la versión del tractatus... >> "
 		cd $DIR
   		rm 0-*.txt
   		rm -R files
@@ -133,23 +131,35 @@ then
   		fdesglosetractatus
   		echo
 	fi
-else
-	if [ -d $DIR ]
-	then
-		fcolor "Encontrado directorio de trabajo..."
-		echo
-	else
-		echo "La primera vez que se ejecuta el script ha de lanzarse con la opción -update"
-		echo
-
-		exit 1
-	fi
-fi
+}
+#
+#
+### Argumentos opcionales
+while [ $1 ]; do
+	case $1 in
+		'-h' | '--help' | '?' )
+			fshowhelp
+			exit
+			;;
+		'--update' | '-u' )
+            factualizar
+            break
+			;;
+		* )
+			fshowhelp
+			exit
+			;;
+	esac
+done
+#
+DIR=$HOME/TRAC
+#
 ###
 cd $DIR/files
 NUM2=$(cat ../0-file1.txt | awk 'BEGIN { FS="\n"; RS="" } {print $1 }' | awk -F " " '{print$1 }' | wc -l)
 while [ "$OPC1" != 3 ]
 do
+    echo
 	fcolor "[1] Entrar una busqueda"
 	fcolor "[2] Realizar busqueda avanzada"
 	fcolor "[3] Salir"
@@ -168,6 +178,7 @@ do
       	    then
         	    pr -f -d -h $COMANDO $COMANDO | ccze -A
           	    echo
+                echo "Pulsar INTRO para volver al menú"
           	    read
      	    else
           	    fpagina_man
@@ -198,7 +209,6 @@ do
                   	done
                   	echo
                   	echo "[0] Cancelar"
-                  	echo
                   	echo
                   	read -p "<< Comando a mostrar... >> " COM
                   	if [ $COM -ne 0 ] && [ $COM -le $numero ];

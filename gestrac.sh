@@ -74,7 +74,7 @@ function fpagina_man ()
     if [ $MAN -gt 2 ]
     then
         echo
-        read -p "No existe la entrada $COMANDO en el tractatus... ¿Visualizar su página man?  (s/n) " CON
+        read -n 1 -p "No existe la entrada $COMANDO en el tractatus... ¿Visualizar su página man?  (s/n) " CON
         echo
         if [ $CON = s ]
         then
@@ -231,6 +231,8 @@ do
                     	echo
                       	clear
                       	cowsay -f tux "No existe en el listado"
+                        echo
+                        echo "Pulsar INTRO para volver al menú"
                       	read
                  	else
                     	OP="n"

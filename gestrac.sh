@@ -1,111 +1,111 @@
 #!/bin/bash
 # Date: 30-01-2014
 # Author: "lapipaplena" <lapipaplena@gmail.com>
-# Version: 4.8
+# Version: 5 (31-1-15)
 # Licence: GPL v3.0
 # Description: Consulta del tractatus alojado en GitHub via consola.
 # Require: cowsay ccze git
-if [ "$1" = -h ]
+if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]
 then
 	echo
-	echo "  gestrac -update (Descargar la última versión) "
+	echo "  gestrac [--update] [-u] (Descargar la última versión) "
 	echo
 	echo "  gestrac (Consulta local. Más rápido) "
 	echo
-	echo "  gestrac -h (Mostrar esta ayuda y salir) "
+	echo "  gestrac [--help] [-h] (Mostrar esta ayuda y salir) "
 	echo
 	exit
 else
 	echo
-fi 
+fi
 DIR=$HOME/TRAC
 ## comprobar privilegios
 if [ "$(id -u)" = "0" ]
-then 
-  echo
-  echo "<< Ejecutar el script como usuario sin privilegios... abortando.... >>"
-  echo
- exit 1
+then
+    echo
+    echo "<< Ejecutar el script como usuario sin privilegios... abortando.... >>"
+    echo
+    exit 1
 fi
 #
 function fcolor ()
 {
-  echo $1 | ccze -A
+    echo $1 | ccze -A
 }
 #
 function fdir ()
 {
-if [ -d $DIR ]
-then
-  echo
-else
-  mkdir $DIR
-fi
+    if [ -d $DIR ]
+    then
+        echo
+    else
+        mkdir $DIR
+    fi
 }
 #
 function fdesglosetractatus ()
 {
-mkdir files
-cd files
-ESTAT=1 # 1 - Linia en blanc, 2- comanda, 
-COMANDA=""
-while read linia
-do
-	if [ $ESTAT -eq 1 ] && [ -z "${linia}" ]; 
-	then
-		ESTAT=1
-	else
-		if [ $ESTAT -eq 1 ] && [ ! -z "${linia}" ];
-		then
-			ESTAT=2
-			read -ra COMANDA <<< "$linia"
-			echo "$linia" >> "$COMANDA"
-		elif [ $ESTAT -eq 2 ] && [ -z "${linia}" ];
-		then
-			ESTAT=1
-		else
-			echo "$linia" >> "$COMANDA"
-		fi
-	fi
-done < ../0-file1.txt
-echo
-fcolor "... proceso terminado...."
-cd ..
-ls files > 0-lista.txt
-if [ ! -s 0-lista.txt ]
-then
-  fcolor "Se han detectado errores al procesar la descarga del Tractatus"
-  exit
-else
-  echo
- fcolor  "<< Creado el directorio "files" correctamente ... >>"
-fi
+    mkdir files
+    cd files
+    ESTAT=1 # 1 - Linia en blanc, 2- comanda,
+    COMANDA=""
+    while read linia
+    do
+	    if [ $ESTAT -eq 1 ] && [ -z "${linia}" ];
+	    then
+		    ESTAT=1
+	    else
+		    if [ $ESTAT -eq 1 ] && [ ! -z "${linia}" ];
+		    then
+			    ESTAT=2
+			    read -ra COMANDA <<< "$linia"
+			    echo "$linia" >> "$COMANDA"
+		    elif [ $ESTAT -eq 2 ] && [ -z "${linia}" ];
+		    then
+			    ESTAT=1
+		    else
+			    echo "$linia" >> "$COMANDA"
+		    fi
+	    fi
+    done < ../0-file1.txt
+    echo
+    fcolor "... proceso terminado...."
+    cd ..
+    ls files > 0-lista.txt
+    if [ ! -s 0-lista.txt ]
+    then
+        fcolor "Se han detectado errores al procesar la descarga del Tractatus"
+        exit
+    else
+        echo
+        fcolor  "<< Creado el directorio "files" correctamente ... >>"
+    fi
 }
 #
 function fpagina_man ()
 {
-  MAN=$(man $COMANDO | wc -l 2>/dev/null)
-  if [ $MAN -gt 2 ]
-  then
-      echo
-      read -p "No existe la entrada $COMANDO en el tractatus... ¿Visualizar su página man?  (s/n) " CON
-      echo
-      if [ $CON = s ]
-      then
-          echo
-          man $COMANDO
-          echo
-     else
-          echo
-     fi
-  else
-      cowsay -f tux "Concepto inexistente en el tractatus y en las páginas man"
-  fi
-  read
+    MAN=$(man $COMANDO | wc -l 2>/dev/null)
+    if [ $MAN -gt 2 ]
+    then
+        echo
+        read -p "No existe la entrada $COMANDO en el tractatus... ¿Visualizar su página man?  (s/n) " CON
+        echo
+        if [ $CON = s ]
+        then
+            echo
+            man $COMANDO
+            echo
+        else
+            echo
+        fi
+    else
+        cowsay -f tux "Concepto inexistente en el tractatus y en las páginas man"
+    fi
+    read
 }
 #
 ###
-if [ "$1" = -update ]
+if [[ "$1" == "--update" ]] || [[ "$1" == "-u" ]]
 then
 	if [ -d $DIR ]
 	then
@@ -115,7 +115,7 @@ then
   		rm 0-*.txt
   		rm -R files
   		echo
-#  		git pull
+        #  		git pull
   		echo
 		cp ~/tractatus/tractatus.txt .
   		cat tractatus.txt | sed '1d' > 0-file1.txt
@@ -134,7 +134,16 @@ then
   		echo
 	fi
 else
-	echo
+	if [ -d $DIR ]
+	then
+		fcolor "Encontrado directorio de trabajo..."
+		echo
+	else
+		echo "La primera vez que se ejecuta el script ha de lanzarse con la opción -update"
+		echo
+
+		exit 1
+	fi
 fi
 ###
 cd $DIR/files
@@ -145,30 +154,30 @@ do
 	fcolor "[2] Realizar busqueda avanzada"
 	fcolor "[3] Salir"
 	echo
-	read -p "<< Ingresar opción (NO distingue mayúsculas y minúsculas): >> " OPC1
+	read -n 1 -p "<< Ingresar opción (NO distingue mayúsculas y minúsculas): >> " OPC1
 	echo
 	case $OPC1 in
-	1)
-    	# Buscar los comandos deseados.
-    	echo
-    	read -p "<< Introducir dato a consultar: >> " COMAND_
-     	echo
-		COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
- 		clear
-      	if [ -e "$COMANDO" ]
-      	then
-        	pr -f -d -h $COMANDO $COMANDO | ccze -A
-          	echo
-          	read
-     	else
-          	fpagina_man
-          	echo
-     	fi
-     	clear;;
- 	2)
-      	### Busqueda recursiva
-      	clear
-      	echo
+	    1)
+    	    # Buscar los comandos deseados.
+    	    echo
+    	    read -p "<< Introducir dato a consultar: >> " COMAND_
+     	    echo
+		    COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
+ 		    clear
+      	    if [ -e "$COMANDO" ]
+      	    then
+        	    pr -f -d -h $COMANDO $COMANDO | ccze -A
+          	    echo
+          	    read
+     	    else
+          	    fpagina_man
+          	    echo
+     	    fi
+     	    clear;;
+ 	    2)
+      	    ### Busqueda recursiva
+      	    clear
+      	    echo
         	read -p "<< Introducir dato a consultar: >> " COMAND_
           	echo
           	COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
@@ -222,9 +231,9 @@ do
             	fpagina_man
               	echo
          	fi
-     	 echo;;
-	3);;
-esac
+     	    echo;;
+	    3);;
+    esac
 done
 clear
 echo
@@ -234,4 +243,3 @@ echo "============================================================="
 cd $HOME
 echo
 exit
-

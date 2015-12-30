@@ -6,6 +6,7 @@
 # Description: Consulta del tractatus alojado en GitHub via consola.
 # Require: cowsay ccze git
 ## comprobar privilegios
+DIR=$HOME/TRAC
 if [ "$(id -u)" = "0" ]
 then
     echo
@@ -152,7 +153,6 @@ while [ $1 ]; do
 	esac
 done
 #
-DIR=$HOME/TRAC
 #
 ###
 cd $DIR/files

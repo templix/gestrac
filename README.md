@@ -7,7 +7,7 @@ Se trata de un complemento de la versión web (https://tractatuslapipaplena.hero
 
 Uso:
 
-gestrac -update
+gestrac --update
       (Descarga la última versión del tractatus alojada en github.)
       
 gestrac

@@ -82,13 +82,15 @@ function fpagina_man ()
             echo
             man $COMANDO
             echo
-            echo "Pulsar la letra "q" para salir"
+            echo "Pulsar "intro" para volver al menú"
             echo
         else
             echo
         fi
     else
+        echo
         cowsay -f tux "Concepto inexistente en el tractatus y en las páginas man"
+        echo
     fi
     read
 }

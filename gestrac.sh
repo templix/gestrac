@@ -1,7 +1,7 @@
 #!/bin/bash
-# Date: 30-12-2015
+# Date: 09-07-2016
 # Author: "lapipaplena" <lapipaplena@gmail.com>
-# Version: 6 (30-12-15)
+# Version: 6.0 (09-07-2016)
 # Licence: GPL v3.0
 # Description: Consulta del tractatus alojado en GitHub via consola.
 # Require: cowsay ccze git
@@ -82,6 +82,8 @@ function fpagina_man ()
             echo
             man $COMANDO
             echo
+            echo "Pulsar la letra "q" para salir"
+            echo
         else
             echo
         fi
@@ -95,6 +97,8 @@ function fshowhelp ()
 {
   	echo
 	echo "  gestrac [--update] [-u] (Descargar la última versión) "
+    echo
+    echo "  gestrac [--version] [-v] (Consultar versión)"
 	echo
 	echo "  gestrac (Consulta local. Más rápido) "
 	echo
@@ -146,6 +150,10 @@ while [ $1 ]; do
             factualizar
             break
 			;;
+        '--version' | '-v' )
+            sed -n 4p ~/gestrac/gestrac.sh
+            exit
+            ;;
 		* )
 			fshowhelp
 			exit

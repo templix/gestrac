@@ -120,7 +120,7 @@ function factualizar ()
   		rm 0-*.txt
   		rm -R files
   		echo
-        #  		git pull
+        # git pull
   		echo
 		cp ~/tractatus/tractatus.txt .
   		cat tractatus.txt | sed '1d' > 0-file1.txt
@@ -179,6 +179,7 @@ do
 	case $OPC1 in
 	    1)
     	    # Buscar los comandos deseados.
+            clear
     	    echo
     	    read -p "<< Introducir dato a consultar: >> " COMAND_
      	    echo
@@ -229,12 +230,15 @@ do
                         	echo
                           	clear
                           	pr -f -d -h $comando $comando | ccze -A
+                            echo
+                	        echo "Pulsar INTRO para volver al menú"
+          	    	        #read
                       	else
                         	echo
                      	fi
                     	read
                     	echo
-                    	read -p "<< Consultar otro comando del listado? [s/n] >> " OP
+                    	read -n 1 -p "<< Consultar otro comando del listado? [s/n] >> " OP
                     	clear
                   	elif [ $COM -gt $numero ] ;
                   	then

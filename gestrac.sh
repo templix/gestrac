@@ -91,6 +91,8 @@ function fpagina_man ()
         echo
         cowsay -f tux "Concepto inexistente en el tractatus y en las páginas man"
         echo
+        echo "Pulsar "intro" para volver al menú"
+        echo
     fi
     read
 }

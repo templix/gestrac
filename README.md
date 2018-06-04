@@ -1,7 +1,7 @@
 gestrac
 =======
 
-script que permite consultas del tractatus via consola. 
+script que permite consultas del tractatus via terminal. 
 
 Se trata de un complemento de la versión web (https://tractatuslapipaplena.herokuapp.com/) del mismo tractatus.
 

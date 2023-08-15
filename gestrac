@@ -1,0 +1,531 @@
+#!/usr/bin/env bash
+# Date: 09-07-2016 (6.0), 19-07-2023 (6.5), 20-7-2023 (7.0), 11-08-2023 (7.5).
+# Author: "lapipaplena" <lapipaplena@gmail.com>
+# Version: 8.00 (13-8-2023)
+# Licence: GPL v3.0
+# Description: Consulta y actualiza el tractatus alojado en GitHub via consola.
+# Require: cowsay ccze git
+## comprobar privilegis
+#
+### functions ###
+#
+function fcolor ()
+{
+    echo $1 | ccze -A
+}
+#
+function fdir ()
+{
+    if [ -d $DIR ]
+    then
+        echo
+    else
+        mkdir $DIR
+    fi
+}
+#
+function fdesglosetractatus ()
+{
+    mkdir files
+    cd files
+    ESTAT=1 # 1 - Linia en blanc, 2- comanda,
+    COMANDA=""
+    while read linia
+    do
+        if [ $ESTAT -eq 1 ] && [ -z "${linia}" ];
+        then
+            ESTAT=1
+        else
+            if [ $ESTAT -eq 1 ] && [ ! -z "${linia}" ];
+            then
+                ESTAT=2
+                read -ra COMANDA <<< "$linia"
+                echo "$linia" >> "$COMANDA"
+            elif [ $ESTAT -eq 2 ] && [ -z "${linia}" ];
+            then
+                ESTAT=1
+            else
+                echo "$linia" >> "$COMANDA"
+            fi
+        fi
+    done < ../0-file1.txt
+    echo
+    fcolor "... proceso terminado...."
+    cd ..
+    ls files > 0-lista.txt
+    if [ ! -s 0-lista.txt ]
+    then
+        fcolor "Se han detectado errores al procesar la descarga del Tractatus"
+        exit
+    else
+        echo
+        fcolor  "<< Creado el directorio "files" correctamente ..."
+    fi
+}
+#
+function fpagina_man ()
+{
+    MAN=$(man $COMANDO | wc -l 2>/dev/null)
+    if [ $MAN -gt 2 ]
+    then
+        echo
+        read -n 1 -p "No existeix l'entrada $COMANDO en el tractatus... ¿Visualitzar la seva pàgina man?  (s/n) " CON
+        echo
+        if [ $CON = s ]
+        then
+            echo
+            man $COMANDO
+            echo
+            fcolor "Pulsar "intro" per tornar al menú"
+            echo
+        else
+            echo
+            fcolor "Pulsar "intro" per tornar al menú"
+            echo
+        fi
+    else
+        echo
+        cowsay -f tux "Concepteo inexistent en el tractatus y en less pàginas man. Pulsar "intro" per tornar al menú"
+        echo
+    fi
+    read
+    clear
+}
+#
+#
+function factualizar ()
+{
+    if [ -d $DIR ]
+    then
+        echo
+        fcolor "Trobat directori de treball ${HOME}/TRAC ..."
+        echo
+        fcolor " <<Actualizando la versión del tractatus... >> "
+        #cd /home/pep/webtrac2pip/tractatus
+        #git pull
+        cd $DIR
+        rm 0-*.txt
+        rm -R files
+        rm tractatus.txt
+        cp /home/pep/webtrac2pip/tractatus/tractatus.txt /home/pep/TRAC
+        echo
+        cat tractatus.txt | sed '1d' > 0-file1.txt
+        cat 0-file1.txt | tr -d '\r' > 0-file3.txt
+        mv 0-file3.txt 0-file1.txt
+        fdesglosetractatus
+        echo
+    else
+        fdir
+        cd $DIR
+        git clone https://github.com/templix/tractatus.git .
+        git init
+        echo
+        fcolor " << Creando directorio TRAC y repositorio git... >> "
+        echo
+        cat tractatus.txt | sed '1d' > 0-file1.txt
+        cat 0-file1.txt | tr -d '\r' > 0-file3.txt
+        mv 0-file3.txt 0-file1.txt
+        fdesglosetractatus
+        echo
+    fi
+}
+#
+function _post () {
+
+    for i in *
+    do
+        cat ../plantilla0.txt > ../tmp2/$i
+        cat $i | sed -e '1 s/^/# /' -e 'G' >> ../tmp2/$i
+	# -f gfm desactiva el suport de TEX a l'hora de llegir. O sigui, no interpreta codi TeX
+ 	pandoc -f gfm -o ../tmp3/$i.html ../tmp2/$i
+        cat ../tmp3/$i.html > ../HTMLS/$i.html
+        #cp -u ../tmp3/$i.html ../HTMLS/
+        sed -i '1i\<a href="http://localhost/tractatus/">Volver al listado</a><br><br>' ../HTMLS/$i.html
+	echo "<br><a href="http://localhost/tractatus/">Volver al listado</a>" >> ../HTMLS/$i.html
+        echo -e "<li><a id='$i' href="http://localhost/tractatus/${i}.html">$i</a></li> " >> ../HTMLS/index.html
+        i=i+1
+    done
+    echo -e "</div>" >> ../HTMLS/index.html
+    echo
+    echo "... convertits els arxius a html..."
+}
+#
+## Desglosar el tractatus.md en entrades independents
+function _desglose () {
+	cat /home/pep/TRAC/tractatus.md | awk 'BEGIN {ESTADO=1} \
+		{ \
+			if (ESTADO == 1 && NF == 0) \
+					{ESTADO=1} \
+			else    {       if (ESTADO==1 && NF != 0) {NOMBRE=$1; ESTADO=2; print $0 >> NOMBRE} \
+							else    {       if (ESTADO==2 && NF == 0) {ESTADO=1} \
+											else { print $0 >> NOMBRE } \
+									} \
+					} \
+		}'
+	echo
+    echo "... Desglose acabat..."
+}
+#
+######################################
+########### init #####################
+#
+DIR=$HOME/TRAC
+if [ "$(id -u)" = "0" ]
+then
+    echo
+    fcolor "<< Executar l'script com a usuari sense privilegis... sortint... >>"
+    echo
+    exit 1
+fi
+#
+echo
+cd $HOME/webtrac2pip/tractatus
+fcolor "fet git pull al directori $HOME/webtrac2pip/tractatus i..." > $DIR/pull.txt
+git pull >> $DIR/pull.txt
+cat $DIR/pull.txt
+echo
+rm $DIR/pull.txt
+#
+cd $DIR/files
+NUM2=$(ls /home/pep/TRAC/webtrac/FILES | grep -v 'index.html' -w | wc -l)
+echo
+#clear
+echo
+while [ "$OPC1" != 9 ]
+do
+    echo
+    fcolor "[1] Cercar una comanda"
+    fcolor "[2] Cerca recursiva"
+    fcolor "[3] Escriure un commit i tot seguit un push"
+    fcolor "[4] Descarregar la darrera versió del tractatus de github"
+    fcolor "[5] Convertir tractatus.txt a tractatus.md"
+    fcolor "[6] Actualitzar la web del tractatus"
+    fcolor "[7] Consultar número d'entrades del tractatus"
+    fcolor "[8] Versió"
+    fcolor "[9] Diferentes consultes amb git"
+    fcolor "[0] Sortir"
+    echo
+    read -n 1 -p "<< Ingresar el num d'una opció
+  (En les opcions 1 i 2 NO distingeix majúscules i minúsculas): >> " OPC1
+    echo
+    case $OPC1 in
+        1)
+            # Cercar les comandes.
+            clear
+            echo
+            read -p "<< Entrar una dada a consultar: >> " COMAND_
+            echo
+            COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
+            clear
+            if [ -f ${COMANDO} ]
+            then
+                cat ${COMANDO} | less
+                echo
+                #echo "Pulsar INTRO per tornar al menú"
+                #read
+            else
+                fpagina_man
+                echo
+            fi
+            clear
+            ;;
+        2)
+            ### Cerca recursiva
+            clear
+            echo
+            read -p "<< Introducir dato a consultar: >> " COMAND_
+            echo
+            COMANDO=$(echo "$COMAND_" | tr 'A-Z' 'a-z')
+            clear
+            grep -l $COMANDO * | cut -d/ -f2 > ../0-file3.txt
+            if [ -s ../0-file3.txt ]
+            then
+                OP=s
+                while [ $OP = s ]
+                do
+                    echo
+                    fcolor "$COMANDO surt en els següents archius: "
+                    echo
+                    numero=0
+                    for linia in `cat ../0-file3.txt`; do
+                        let numero+=1
+                        echo "[$numero] $linia"
+                    done
+                    echo
+                    fcolor "[0] Cancelar"
+                    echo
+                    read -p "<< Número de la comanda a mostrar... >> " COM
+                    if [ $COM -ne 0 ] && [ $COM -le $numero ];
+                    then
+                        comando=`sed -n ${COM}p ../0-file3.txt`
+                        if [ "$?" -eq "0" ]
+                        then
+                            echo
+                            clear
+                            pr -f -d -h $comando $comando | less
+                            echo
+                            #fcolor "Pulsar INTRO para volver al menú"
+                            #read
+                        else
+                            echo
+                        fi
+                        #read
+                        echo
+                        read -n 1 -p "<< Consultar un altre comanda del listat? [s/n] >> " OP
+                        clear
+                    elif [ $COM -gt $numero ] ;
+                    then
+                        echo
+                        clear
+                        cowsay -f tux "No existeix en el listat"
+                        echo
+                        fcolor "Pulsar INTRO para volver al menú"
+                        read
+                    else
+                        OP="n"
+                        clear
+                    fi
+                done
+            else
+                fpagina_man
+                echo
+            fi
+            echo
+            ;;
+        3)
+            ### Realizar un commit i tot seguit un push
+            #cd /home/pep/webtrac2pip/tractatus
+            #git pull
+            rm /home/pep/Dropbox/tractatus.txt
+            rm /home/pep/tractatus/tractatus.txt
+            #echo "fet git pull i eliminats els txt dels directoris Dropbox i tractatus."
+            echo
+            #read -n 1 -p "pulsa tecla per fer el commit"
+            #echo
+            echo "templix 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"
+            echo
+            git commit -a
+            git push
+            cp tractatus.txt /home/pep/tractatus/
+            cp tractatus.txt /home/pep/Dropbox/
+            fcolor "Copiat nou tractatus a $HOME/tractatus i $HOME/Dropbox"
+            echo
+            read -n 1 -p "Pulsa tecla per tornar al manú"
+            cd ..
+            clear
+            ;;
+        4)
+            ### descargar la última versió del tractatus de github
+            factualizar
+            echo
+            read -n 1 -p "Pulsa tecla per tornar al manú"
+            clear
+            ;;
+        5)
+            ### convertir a markdown
+            # function _desglose () {
+            #     cat $HOME/TRAC/tractatus.md | awk 'BEGIN {ESTADO=1} \
+	    #     { \
+	    #     	if (ESTADO == 1 && NF == 0) \
+	    #     			{ESTADO=1} \
+	    #     	else    {       if (ESTADO==1 && NF != 0) {NOMBRE=$1; ESTADO=2; print $0 >> NOMBRE} \
+	    #     					else    {       if (ESTADO==2 && NF == 0) {ESTADO=1} \
+	    #     									else { print $0 >> NOMBRE } \
+	    #     							} \
+	    #     			} \
+	    #     }'
+            #     echo
+            #     fcolor  " Separació del tractatus per comandes amb markdown acabat. "
+            #     echo
+            # }
+            #
+            DIR2=/home/pep/TRAC/1-tractatux
+            if [ -d "$DIR2" ]
+            then
+                cd $DIR2/FILES
+                #rm *
+            else
+                mkdir /home/pep/TRAC/1-tractatux
+                mkdir /home/pep/TRAC/1-tractatux/FILES
+                cd /home/pep/TRAC/1-tractatux/FILES
+            fi
+            rm $HOME/TRAC/tractatus.txt
+            cp $HOME/webtrac2pip/tractatus/tractatus.txt $HOME/TRAC/
+            rm $HOME/TRAC/tractatus.md
+            # convertir txt a markdown:
+            cat $HOME/TRAC/tractatus.txt | sed -e '1,2d' | sed -e 's/^[#]/>\\#/' -e 's/^[$]/>$/' -e 's/^[<]/\t\</' > $HOME/TRAC/tractatus.md
+            cat $HOME/TRAC/tractatus.md | tr -d '\r' > $HOME/TRAC/file1.md
+            mv $HOME/TRAC/file1.md $HOME/TRAC/tractatus.md
+            fcolor "creat tractatus.md..."
+            echo
+            #
+            _desglose
+            echo
+            #NUM=$(ls /home/pep/TRAC/webtrac/FILES | grep -v 'index.html' -w | wc -l)
+            #echo $NUM
+            #ls | wc -l
+            echo
+            read -n 1 -p "Pulsa tecla per tornar al menú"
+            echo
+            clear
+            ;;
+        6)
+            ### Actualizar la web local del tractatus
+            ## Crear directorios de trabajo.
+            DIR3=/home/pep/TRAC/webtrac
+            if [ -d $DIR ]
+            then
+                rm -R $DIR3/HTMLS/* $DIR3/FILES/* $DIR3/tmp/* $DIR3/tmp2/* $DIR3/tmp3/* 2>/dev/null
+                #rm -R $DIR/FILES/* $DIR/tmp/* $DIR/tmp2/* $DIR/tmp3/* 2>/dev/null
+                echo
+                fcolor "Esborrades totes les comandes..."
+                echo
+            else
+                mkdir -p $DIR3/{HTMLS,FILES,tmp,tmp2,tmp3}
+                echo "creat directori de treball i temporals"
+                echo
+            fi
+            #
+            ## comprobar si hi ha modificacions
+            #cd /home/pep/webtrac2pip/tractatus
+            #git pull
+            echo
+            #read -n 1 -p "Comprobat amb git pull si el tractatus ha estat actualitzat"
+            echo
+            cd $DIR3
+            ## Descargar el tractatus.txt
+            cp $HOME/webtrac2pip/tractatus/tractatus.txt .
+            #
+            cd $DIR3/FILES/
+            _desglose
+            ENTRADAS=$(ls /home/pep/TRAC/webtrac/FILES | grep -v 'index.html' -w | wc -l)
+            echo
+            fcolor "actualitzant els html..."
+            sed "s/ENTRADAS/$ENTRADAS/" ../plantilla1.txt > ../plantilla.txt
+            cat ../plantilla.txt >> ../HTMLS/index.html
+            echo
+            _post
+            cd ..
+            cat plantilla2.txt >> HTMLS/index.html
+            echo
+            ###########################
+            # ## eliminar directorios y ficheros temporales:
+            #rm -R FILES/* tmp* file1.*
+            echo
+            if [ -d /var/www/html/tractatus ]
+            then
+                fcolor "Directori web correcta: /var/www/html/tractatus"
+                #rm /var/www/html/tractatus/*.html 2>/dev/null
+            else
+                mkdir /var/www/html/tractatus
+            fi
+            pwd
+            cp -u HTMLS/* /var/www/html/tractatus/
+            echo
+            echo "$ENTRADAS entrades en el tractatus"
+            echo
+            read -n 1 -p "Pulsa tecla per tornar al menú"
+            clear
+            ;;
+        7)
+            ### Consultar número de entradas del tractatus"
+            echo
+            cd $DIR
+            NUM=$(ls /home/pep/TRAC/webtrac/FILES | grep -v 'index.html' -w | wc -l)
+            clear
+            echo
+            echo  "=============================================================="
+            fcolor "<< La base de dades del tractatus compta amb $NUM  entradas >>"
+            echo "=============================================================="
+            echo
+            read -n 1 -p "Pulsa tecla per tornar al menú"
+            clear
+            ;;
+        8)
+            ### Versió i de on es pot descarregar
+            clear
+            fcolor "----- la versió actual és: "
+            echo
+            sed -n 4p /usr/local/bin/gestrac | tr -d '#'
+            echo
+            fcolor "----- les anteriors son: "
+            echo
+            sed -n 2p /usr/local/bin/gestrac | tr -d '# Date:'
+            echo
+            fcolor "----- La darrera versió del tractatus es pot descarregar: "
+            echo
+            fcolor "wget https://github.com/templix/tractatus.git"
+            echo
+            fcolor "Pulsar tecla per tornar al menú"
+            read -n 1
+            clear
+            echo
+            ;;
+        9)
+            ### diferents consultes amb git
+            echo
+            cd $HOME/webtrac2pip/tractatus
+            clear
+            while [ "$OP" != 6 ]
+            do
+                echo
+                fcolor "[1] git log"
+                fcolor "[2] git status"
+                fcolor "[3] git pull"
+                fcolor "[4] Configuració de git"
+                fcolor "[5] Archius del directori descartats"
+                fcolor "[6] Sortir"
+                echo
+                read -n 1 -p "<< Ingresar el num d'una opció " OP
+                echo
+                case $OP in
+                    1)
+                        clear
+                        git log
+                        clear
+                        ;;
+                    2)
+                        clear
+                        git status
+                        read
+                        clear
+                        ;;
+                    3)
+                        clear
+                        git pull
+                        read
+                        clear
+                        ;;
+                    4)
+                        clear
+                        git config -l
+                        read
+                        clear
+                        ;;
+                    5)
+                        clear
+                        cat .gitignore
+                        read
+                        clear
+                        ;;
+                    6)
+                        clear
+                        unset OPC1
+                        #exit
+                        ;;
+                esac
+            done
+            ;;
+        0)
+            ### Sortir
+            clear
+            exit
+            ;;
+    esac
+done
+echo
+echo  "=============================================================="
+fcolor "<< La base de dades del tractatus compta amb  $NUM2 entradas >>"
+echo "=============================================================="
+echo
+exit 0

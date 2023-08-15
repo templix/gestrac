@@ -1,18 +1,17 @@
 gestrac
 =======
 
-script que permite consultas del tractatus via terminal. 
+script que permite consultas del tractatus via terminal.
 
-Se trata de un complemento de la versión web (https://tractatuslapipaplena.herokuapp.com/) del mismo tractatus.
+./gestrac
 
-Uso:
-
-gestrac --update
-      (Descarga la última versión del tractatus alojada en github.)
-      
-gestrac
-      (Una vez actualizado el tractatus las demás consultas ganaran en rapidez sin el argumento "-update")
-      
-
-gestrac -h
-	  (Muestra esta ayuda y sale.)			
+[1] Cercar una comanda
+[2] Cerca recursiva
+[3] Escriure un commit i tot seguit un push
+[4] Descarregar la darrera versió del tractatus de github
+[5] Convertir tractatus.txt a tractatus.md
+[6] Actualitzar la web del tractatus
+[7] Consultar número d'entrades del tractatus
+[8] Versió
+[9] Diferentes consultes amb git
+[0] Sortir

@@ -5,7 +5,7 @@
 # Licence: GPL v3.0
 # Description: Consulta y actualiza el tractatus alojado en GitHub via consola.
 # Require: cowsay ccze git
-## comprobar privilegis
+## comprobar privilegios
 #
 ### functions ###
 #
@@ -294,12 +294,12 @@ do
             ;;
         3)
             ### Realizar un commit i tot seguit un push
-            #cd /home/pep/webtrac2pip/tractatus
+            cd /home/pep/webtrac2pip/tractatus
             #git pull
             rm /home/pep/Dropbox/tractatus.txt
             rm /home/pep/tractatus/tractatus.txt
             #echo "fet git pull i eliminats els txt dels directoris Dropbox i tractatus."
-            echo
+            #echo
             #read -n 1 -p "pulsa tecla per fer el commit"
             #echo
             echo "templix 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"
